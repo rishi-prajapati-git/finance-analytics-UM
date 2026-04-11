@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from pathlib import Path
 
 st.set_page_config(
     page_title="Churn Analytics | European Banking",
@@ -8,9 +9,11 @@ st.set_page_config(
     layout="wide"
 )
 
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "processed" / "churn_final_scored.csv"
+
 @st.cache_data
 def load_data():
-    return pd.read_csv("data/processed/churn_final_scored.csv")
+    return pd.read_csv(DATA_PATH)
 
 df = load_data()
 
@@ -40,13 +43,21 @@ st.title("Customer Segmentation & Churn Pattern Analytics")
 st.markdown("**European Banking | Unified Mentor Internship | ECB**")
 st.markdown("---")
 
+st.info("""
+👈 **Use the sidebar to navigate between pages:**
+- **Churn Summary** — Segment-wise churn rates across age, credit, tenure & balance
+- **Geography & Demographics** — Country, gender and age-group analysis
+- **High-Value Explorer** — Premium customer churn and revenue at risk
+- **Engagement & Tenure** — Activity levels and loyalty patterns
+""")
+
 # KPI Cards
 col1, col2, col3, col4 = st.columns(4)
 
 total_customers = len(filtered_df)
 overall_churn   = filtered_df['Exited'].mean() * 100
 active_members  = int(filtered_df['IsActiveMember'].sum())
-hv_threshold    = df['Balance'].quantile(0.75)
+hv_threshold    = filtered_df['Balance'].quantile(0.75)
 hv_churners     = int(filtered_df[
     (filtered_df['Balance'] >= hv_threshold) &
     (filtered_df['Exited'] == 1)

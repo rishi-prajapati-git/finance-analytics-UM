@@ -1,12 +1,15 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from pathlib import Path
 
 st.set_page_config(page_title="High-Value Customer Explorer", layout="wide")
 
+DATA_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "processed" / "churn_final_scored.csv"
+
 @st.cache_data
 def load_data():
-    return pd.read_csv("data/processed/churn_final_scored.csv")
+    return pd.read_csv(DATA_PATH)
 
 df = load_data()
 
