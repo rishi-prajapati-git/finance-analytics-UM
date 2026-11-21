@@ -1,0 +1,78 @@
+{
+  "Logistic Regression": {
+    "Accuracy": 0.71,
+    "Precision": 0.3881,
+    "Recall": 0.7371,
+    "F1_Score": 0.5085,
+    "ROC_AUC": 0.7785,
+    "CV_ROC_AUC_Mean": 0.7677,
+    "CV_ROC_AUC_Std": 0.0209,
+    "ConfusionMatrix": [
+      [
+        1120,
+        473
+      ],
+      [
+        107,
+        300
+      ]
+    ]
+  },
+  "Random Forest": {
+    "Accuracy": 0.8475,
+    "Precision": 0.6371,
+    "Recall": 0.5823,
+    "F1_Score": 0.6085,
+    "ROC_AUC": 0.8575,
+    "CV_ROC_AUC_Mean": 0.8545,
+    "CV_ROC_AUC_Std": 0.0122,
+    "ConfusionMatrix": [
+      [
+        1458,
+        135
+      ],
+      [
+        170,
+        237
+      ]
+    ]
+  },
+  "Gradient Boosting": {
+    "Accuracy": 0.8625,
+    "Precision": 0.7519,
+    "Recall": 0.484,
+    "F1_Score": 0.5889,
+    "ROC_AUC": 0.8617,
+    "CV_ROC_AUC_Mean": 0.8578,
+    "CV_ROC_AUC_Std": 0.0109,
+    "ConfusionMatrix": [
+      [
+        1528,
+        65
+      ],
+      [
+        210,
+        197
+      ]
+    ]
+  },
+  "XGBoost Classifier": {
+    "Accuracy": 0.8215,
+    "Precision": 0.5488,
+    "Recall": 0.6904,
+    "F1_Score": 0.6115,
+    "ROC_AUC": 0.8618,
+    "CV_ROC_AUC_Mean": 0.8593,
+    "CV_ROC_AUC_Std": 0.0117,
+    "ConfusionMatrix": [
+      [
+        1362,
+        231
+      ],
+      [
+        126,
+        281
+      ]
+    ]
+  }
+}
