@@ -1,160 +1,242 @@
+"""
+Main Executive Portal: European Banking Customer Segmentation & Churn Analytics
+"""
+
+import sys
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from pathlib import Path
+import plotly.graph_objects as go
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from src.data_loader import load_dataset
+from app.ui_utils import apply_custom_styles, render_hero_banner
 
 st.set_page_config(
-    page_title="Churn Analytics | European Banking",
-    page_icon="📊",
-    layout="wide"
+    page_title="Executive Churn Analytics | European Banking",
+    page_icon="🏦",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "processed" / "churn_final_scored.csv"
+apply_custom_styles()
 
 @st.cache_data
-def load_data():
-    return pd.read_csv(DATA_PATH)
+def get_data():
+    return load_dataset("churn_final_scored.csv")
 
-df = load_data()
+df = get_data()
 
-# Sidebar
-st.sidebar.title("Filters")
-st.sidebar.markdown("---")
-
-selected_countries = st.sidebar.multiselect(
-    "Select Countries",
-    options=df['Geography'].unique().tolist(),
-    default=df['Geography'].unique().tolist()
+# ── Header Banner ─────────────────────────────────────────────────────────────
+render_hero_banner(
+    title="🏦 Executive Churn & Segmentation Intelligence",
+    subtitle="European Central Bank Retail Banking Analytics • 10,000 Customer Accounts",
+    badge_text="Live Production Dashboard"
 )
 
-selected_gender = st.sidebar.multiselect(
-    "Select Gender",
-    options=df['Gender'].unique().tolist(),
-    default=df['Gender'].unique().tolist()
-)
+# ── Sidebar Filters ────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.markdown("### 🎛️ Global Filters")
+    st.markdown("---")
 
+    selected_countries = st.multiselect(
+        "Geography",
+        options=sorted(df['Geography'].unique().tolist()),
+        default=sorted(df['Geography'].unique().tolist()),
+        help="Filter dashboard metrics by customer country of residence."
+    )
+
+    selected_gender = st.multiselect(
+        "Gender",
+        options=sorted(df['Gender'].unique().tolist()),
+        default=sorted(df['Gender'].unique().tolist())
+    )
+
+    age_range = st.slider(
+        "Age Range",
+        min_value=int(df['Age'].min()),
+        max_value=int(df['Age'].max()),
+        value=(int(df['Age'].min()), int(df['Age'].max()))
+    )
+
+    st.markdown("---")
+    st.info(
+        "💡 **Navigation Tip**:\n"
+        "Explore the left sidebar for deep-dive segment analytics, "
+        "interactive **AI Churn Prediction**, and **Model Benchmarks**."
+    )
+
+# Filter dataset
 filtered_df = df[
     (df['Geography'].isin(selected_countries)) &
-    (df['Gender'].isin(selected_gender))
+    (df['Gender'].isin(selected_gender)) &
+    (df['Age'] >= age_range[0]) &
+    (df['Age'] <= age_range[1])
 ]
 
-# Header
-st.title("Customer Segmentation & Churn Pattern Analytics")
-st.markdown("**European Banking | Unified Mentor Internship | ECB**")
+if filtered_df.empty:
+    st.warning("⚠️ No customer records match the selected filter criteria.")
+    st.stop()
+
+# ── KPI Cards Row ─────────────────────────────────────────────────────────────
+total_cust = len(filtered_df)
+churn_rate = filtered_df['Exited'].mean() * 100
+active_cust = int(filtered_df['IsActiveMember'].sum())
+hv_thresh = df['Balance'].quantile(0.75)
+hv_churners = int(filtered_df[(filtered_df['Balance'] >= hv_thresh) & (filtered_df['Exited'] == 1)].shape[0])
+capital_at_risk = filtered_df[filtered_df['Exited'] == 1]['Balance'].sum()
+
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
+with kpi1:
+    kpi1.metric(
+        "Total Portfolio Customers",
+        f"{total_cust:,}",
+        f"{total_cust / len(df) * 100:.0f}% of total base"
+    )
+
+with kpi2:
+    delta_str = f"{(churn_rate - 20.37):+.1f}% vs baseline"
+    kpi2.metric(
+        "Overall Churn Rate",
+        f"{churn_rate:.1f}%",
+        delta=delta_str,
+        delta_color="inverse"
+    )
+
+with kpi3:
+    kpi3.metric(
+        "High-Value Churners",
+        f"{hv_churners:,}",
+        f"Top 25% balance tier"
+    )
+
+with kpi4:
+    kpi4.metric(
+        "Total Capital at Risk",
+        f"€{capital_at_risk / 1e6:.2f}M",
+        f"{capital_at_risk / max(1.0, filtered_df['Balance'].sum()) * 100:.1f}% of balance",
+        delta_color="inverse"
+    )
+
 st.markdown("---")
 
-st.info("""
-👈 **Use the sidebar to navigate between pages:**
-- **Churn Summary** — Segment-wise churn rates across age, credit, tenure & balance
-- **Geography & Demographics** — Country, gender and age-group analysis
-- **High-Value Explorer** — Premium customer churn and revenue at risk
-- **Engagement & Tenure** — Activity levels and loyalty patterns
-""")
+# ── Visual Analytics Row 1 ─────────────────────────────────────────────────────
+col_l, col_r = st.columns(2)
 
-# KPI Cards
-col1, col2, col3, col4 = st.columns(4)
+with col_l:
+    st.subheader("Customer Status Breakdown")
+    status_df = filtered_df['Exited'].value_counts().reset_index()
+    status_df.columns = ['Status', 'Count']
+    status_df['Status'] = status_df['Status'].map({0: 'Retained', 1: 'Churned'})
 
-total_customers = len(filtered_df)
-overall_churn   = filtered_df['Exited'].mean() * 100
-active_members  = int(filtered_df['IsActiveMember'].sum())
-hv_threshold    = filtered_df['Balance'].quantile(0.75)
-hv_churners     = int(filtered_df[
-    (filtered_df['Balance'] >= hv_threshold) &
-    (filtered_df['Exited'] == 1)
-].shape[0])
-
-col1.metric("Total Customers",    f"{total_customers:,}")
-col2.metric("Overall Churn Rate", f"{overall_churn:.1f}%")
-col3.metric("Active Members",     f"{active_members:,}")
-col4.metric("High-Value Churners",f"{hv_churners:,}")
-
-st.markdown("---")
-
-# Row 1
-col_left, col_right = st.columns(2)
-
-with col_left:
-    st.subheader("Overall Churn Distribution")
-    churn_counts = filtered_df['Exited'].value_counts().reset_index()
-    churn_counts.columns = ['Status', 'Count']
-    churn_counts['Status'] = churn_counts['Status'].map({0: 'Retained', 1: 'Churned'})
     fig_pie = px.pie(
-        churn_counts,
+        status_df,
         names='Status',
         values='Count',
         color='Status',
-        color_discrete_map={'Retained': '#185FA5', 'Churned': '#D85A30'},
-        hole=0.4
+        color_discrete_map={'Retained': '#3B82F6', 'Churned': '#EF4444'},
+        hole=0.45
     )
     fig_pie.update_traces(textinfo='percent+label', textfont_size=13)
-    fig_pie.update_layout(showlegend=True, margin=dict(t=20, b=20))
+    fig_pie.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5),
+        margin=dict(t=20, b=20)
+    )
     st.plotly_chart(fig_pie, use_container_width=True)
 
-with col_right:
-    st.subheader("Churn Rate by Country")
-    geo_churn = filtered_df.groupby('Geography')['Exited'].mean().reset_index()
-    geo_churn.columns = ['Country', 'Churn Rate']
-    geo_churn['Churn Rate %'] = (geo_churn['Churn Rate'] * 100).round(1)
-    geo_churn = geo_churn.sort_values('Churn Rate %', ascending=False)
+with col_r:
+    st.subheader("Regional Churn Risk Comparison")
+    geo_df = filtered_df.groupby('Geography')['Exited'].agg(['mean', 'count']).reset_index()
+    geo_df['Churn Rate %'] = (geo_df['mean'] * 100).round(1)
+    geo_df = geo_df.sort_values('Churn Rate %', ascending=False)
+
     fig_geo = px.bar(
-        geo_churn,
-        x='Country',
+        geo_df,
+        x='Geography',
         y='Churn Rate %',
-        color='Country',
-        color_discrete_map={
-            'Germany': '#D85A30',
-            'France':  '#185FA5',
-            'Spain':   '#1D9E75'
-        },
-        text='Churn Rate %'
+        color='Geography',
+        text='Churn Rate %',
+        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
     )
     fig_geo.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-    fig_geo.update_layout(showlegend=False, margin=dict(t=20, b=20),
-                          yaxis_title='Churn Rate (%)')
+    fig_geo.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        showlegend=False,
+        yaxis_title="Churn Rate (%)",
+        xaxis_title="",
+        margin=dict(t=20, b=20)
+    )
     st.plotly_chart(fig_geo, use_container_width=True)
 
 st.markdown("---")
 
-# Row 2
+# ── Visual Analytics Row 2 ─────────────────────────────────────────────────────
 col_l2, col_r2 = st.columns(2)
 
 with col_l2:
-    st.subheader("Churn Rate by Age Segment")
-    age_churn = filtered_df.groupby('age_segment', observed=True)['Exited']\
-                            .mean().reset_index()
-    age_churn.columns = ['Age Segment', 'Churn Rate']
-    age_churn['Churn Rate %'] = (age_churn['Churn Rate'] * 100).round(1)
+    st.subheader("Churn Rate by Age Cohort")
+    age_df = filtered_df.groupby('age_segment', observed=True)['Exited'].agg(['mean', 'count']).reset_index()
+    age_df['Churn Rate %'] = (age_df['mean'] * 100).round(1)
+
     fig_age = px.bar(
-        age_churn,
-        x='Age Segment',
+        age_df,
+        x='age_segment',
         y='Churn Rate %',
         color='Churn Rate %',
-        color_continuous_scale='Blues',
+        color_continuous_scale='Reds',
         text='Churn Rate %'
     )
     fig_age.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-    fig_age.update_layout(margin=dict(t=20, b=20), coloraxis_showscale=False)
+    fig_age.update_layout(
+        coloraxis_showscale=False,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        yaxis_title="Churn Rate (%)",
+        xaxis_title="",
+        margin=dict(t=20, b=20)
+    )
     st.plotly_chart(fig_age, use_container_width=True)
 
 with col_r2:
-    st.subheader("Active vs Inactive Member Churn")
-    active_churn = filtered_df.groupby('IsActiveMember')['Exited']\
-                               .mean().reset_index()
-    active_churn['Member Status'] = active_churn['IsActiveMember'].map(
-        {0: 'Inactive', 1: 'Active'}
-    )
-    active_churn['Churn Rate %'] = (active_churn['Exited'] * 100).round(1)
-    fig_active = px.bar(
-        active_churn,
-        x='Member Status',
+    st.subheader("Activity Status Impact (Active vs Inactive)")
+    act_df = filtered_df.groupby('IsActiveMember')['Exited'].agg(['mean', 'count']).reset_index()
+    act_df['Status'] = act_df['IsActiveMember'].map({0: 'Inactive Member', 1: 'Active Member'})
+    act_df['Churn Rate %'] = (act_df['mean'] * 100).round(1)
+
+    fig_act = px.bar(
+        act_df,
+        x='Status',
         y='Churn Rate %',
-        color='Member Status',
-        color_discrete_map={'Inactive': '#D85A30', 'Active': '#1D9E75'},
+        color='Status',
+        color_discrete_map={'Inactive Member': '#EF4444', 'Active Member': '#10B981'},
         text='Churn Rate %'
     )
-    fig_active.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
-    fig_active.update_layout(showlegend=False, margin=dict(t=20, b=20))
-    st.plotly_chart(fig_active, use_container_width=True)
+    fig_act.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+    fig_act.update_layout(
+        showlegend=False,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        yaxis_title="Churn Rate (%)",
+        xaxis_title="",
+        margin=dict(t=20, b=20)
+    )
+    st.plotly_chart(fig_act, use_container_width=True)
 
+# ── Quick Export & Drilldown ───────────────────────────────────────────────────
 st.markdown("---")
-st.caption("Use the sidebar to filter by country and gender. All charts update dynamically.")
+st.subheader("📥 Export Filtered Analytical Records")
+csv_bytes = filtered_df.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label="Download Filtered Data (CSV)",
+    data=csv_bytes,
+    file_name="filtered_banking_churn_records.csv",
+    mime="text/csv"
+)
