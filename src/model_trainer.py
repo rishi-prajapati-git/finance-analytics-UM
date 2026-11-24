@@ -253,6 +253,21 @@ def save_artifacts(
     model_path = models_dir / "churn_pipeline.joblib"
     joblib.dump(best_pipe, model_path)
 
+    # 1b. Native XGBoost model & Preprocessor params (version-independent)
+    clf = best_pipe.named_steps['classifier']
+    if hasattr(clf, 'save_model'):
+        clf.save_model(str(models_dir / "xgb_model.json"))
+
+    scaler = best_pipe.named_steps['preprocessor'].named_transformers_['num'].named_steps['scaler']
+    prep_params = {
+        'num_cols': NUMERICAL_FEATURES,
+        'means': scaler.mean_.tolist(),
+        'scales': scaler.scale_.tolist(),
+        'cat_cols': CATEGORICAL_FEATURES
+    }
+    with open(models_dir / "preprocessor_params.json", "w", encoding="utf-8") as f:
+        json.dump(prep_params, f, indent=2)
+
     # 2. Metrics summary
     with open(models_dir / "model_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics_payload, f, indent=2)

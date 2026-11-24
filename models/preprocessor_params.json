@@ -1,0 +1,56 @@
+{
+  "num_cols": [
+    "CreditScore",
+    "Age",
+    "Tenure",
+    "Balance",
+    "NumOfProducts",
+    "EstimatedSalary",
+    "BalanceSalaryRatio",
+    "TenureAgeRatio",
+    "CreditScoreAgeRatio",
+    "ProductsPerTenure"
+  ],
+  "means": [
+    650.7525,
+    38.946625,
+    5.016625,
+    76381.20749875,
+    1.5295,
+    99730.81158125,
+    4.111704087500001,
+    0.13781054999999998,
+    17.872177762499998,
+    0.36584915
+  ],
+  "scales": [
+    96.59039415878786,
+    10.526218509482643,
+    2.8966098476279125,
+    62298.159596894104,
+    0.581704177396037,
+    57331.5329828387,
+    111.60164412440925,
+    0.08922849093029367,
+    5.375293276476805,
+    0.33459438852777773
+  ],
+  "feature_names": [
+    "CreditScore",
+    "Age",
+    "Tenure",
+    "Balance",
+    "NumOfProducts",
+    "EstimatedSalary",
+    "BalanceSalaryRatio",
+    "TenureAgeRatio",
+    "CreditScoreAgeRatio",
+    "ProductsPerTenure",
+    "Geography_Germany",
+    "Geography_Spain",
+    "Gender_Male",
+    "HasCrCard_1",
+    "IsActiveMember_1",
+    "IsZeroBalance_1"
+  ]
+}
