@@ -59,13 +59,13 @@ with col1:
     fig = px.bar(
         geo, x='Geography', y='Churn Rate %',
         color='Geography', text='Churn Rate %',
-        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
+        color_discrete_map={'Germany': '#BE123C', 'France': '#F43F5E', 'Spain': '#FB7185'}
     )
     fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig.update_layout(
         showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)
@@ -81,12 +81,12 @@ with col2:
     fig2 = px.bar(
         age_geo, x='age_segment', y='Churn Rate %',
         color='Geography', barmode='group', text='Churn Rate %',
-        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
+        color_discrete_map={'Germany': '#BE123C', 'France': '#F43F5E', 'Spain': '#FB7185'}
     )
     fig2.update_traces(texttemplate='%{text:.1f}%', textposition='outside', textfont_size=10)
     fig2.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="Age Segment",
         margin=dict(t=20, b=20)
@@ -105,12 +105,12 @@ with col3:
     fig3 = px.bar(
         gender, x='Geography', y='Churn Rate %',
         color='Gender', barmode='group', text='Churn Rate %',
-        color_discrete_map={'Male': '#3B82F6', 'Female': '#EC4899'}
+        color_discrete_map={'Male': '#3B82F6', 'Female': '#E11D48'}
     )
     fig3.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig3.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         margin=dict(t=20, b=20)
     )
@@ -119,17 +119,18 @@ with col3:
 with col4:
     st.subheader("Tenure Trajectory vs Attrition")
     tenure = filtered.groupby('tenure_group', observed=True)['Exited'].mean().reset_index()
+    tenure.rename(columns={'tenure_group': 'Tenure Group'}, inplace=True)
     tenure['Churn Rate %'] = (tenure['Exited'] * 100).round(1)
     
     fig4 = px.line(
         tenure, x='Tenure Group', y='Churn Rate %',
         markers=True, text='Churn Rate %',
-        color_discrete_sequence=['#38BDF8']
+        color_discrete_sequence=['#E11D48']
     )
     fig4.update_traces(textposition='top center', texttemplate='%{text:.1f}%', line_width=3, marker_size=10)
     fig4.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         margin=dict(t=20, b=20)
     )

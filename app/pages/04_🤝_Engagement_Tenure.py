@@ -66,13 +66,13 @@ with col_l:
     fig = px.bar(
         act_data, x='Status', y='Churn Rate %',
         color='Status', text='Churn Rate %',
-        color_discrete_map={'Inactive Member': '#EF4444', 'Active Member': '#10B981'}
+        color_discrete_map={'Inactive Member': '#E11D48', 'Active Member': '#10B981'}
     )
     fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig.update_layout(
         showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)
@@ -82,18 +82,19 @@ with col_l:
 with col_r:
     st.subheader("Tenure Group Attrition Curve")
     tenure_data = filtered.groupby('tenure_group', observed=True)['Exited'].agg(['mean', 'count']).reset_index()
+    tenure_data.rename(columns={'tenure_group': 'Tenure Group'}, inplace=True)
     tenure_data['Churn Rate %'] = (tenure_data['mean'] * 100).round(1)
     
     fig2 = px.bar(
         tenure_data, x='Tenure Group', y='Churn Rate %',
-        color='Churn Rate %', color_continuous_scale='Blues',
+        color='Churn Rate %', color_continuous_scale='RdPu',
         text='Churn Rate %'
     )
     fig2.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig2.update_layout(
         coloraxis_showscale=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)
@@ -117,8 +118,8 @@ with col_l2:
     fig3.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig3.update_layout(
         coloraxis_showscale=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         xaxis=dict(tickmode='linear', dtick=1),
         yaxis_title="Churn Rate (%)",
         xaxis_title="Number of Products Held",
@@ -135,13 +136,13 @@ with col_r2:
     fig4 = px.bar(
         ret_data, x='Geography', y='Opportunities',
         color='Geography', text='Opportunities',
-        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
+        color_discrete_map={'Germany': '#BE123C', 'France': '#F43F5E', 'Spain': '#FB7185'}
     )
     fig4.update_traces(texttemplate='%{text:,}', textposition='outside')
     fig4.update_layout(
         showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Target Customer Count",
         xaxis_title="",
         margin=dict(t=20, b=20)
