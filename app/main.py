@@ -1,5 +1,6 @@
 """
 Main Executive Portal: European Banking Customer Segmentation & Churn Analytics
+Theme: Modern White & Rose-Pink Aesthetic
 """
 
 import sys
@@ -15,6 +16,7 @@ if str(ROOT_DIR) not in sys.path:
 
 from src.data_loader import load_dataset
 from app.ui_utils import apply_custom_styles, render_hero_banner
+from app.export_utils import export_csv, export_json, export_pdf, export_docx
 
 st.set_page_config(
     page_title="Executive Churn Analytics | European Banking",
@@ -34,13 +36,13 @@ df = get_data()
 # ── Header Banner ─────────────────────────────────────────────────────────────
 render_hero_banner(
     title="🏦 Executive Churn & Segmentation Intelligence",
-    subtitle="European Central Bank Retail Banking Analytics • 10,000 Customer Accounts",
+    subtitle="European Central Bank Retail Banking Analytics • 10,000 Customer Accounts Across France, Germany & Spain",
     badge_text="Live Production Dashboard"
 )
 
 # ── Sidebar Filters ────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🎛️ Global Filters")
+    st.markdown("### 🎛️ Global Portfolio Filters")
     st.markdown("---")
 
     selected_countries = st.multiselect(
@@ -66,8 +68,8 @@ with st.sidebar:
     st.markdown("---")
     st.info(
         "💡 **Navigation Tip**:\n"
-        "Explore the left sidebar for deep-dive segment analytics, "
-        "interactive **AI Churn Prediction**, and **Model Benchmarks**."
+        "Use the sidebar to explore deep-dive cohort analytics, "
+        "interactive **🤖 AI Churn Predictor**, and **📈 Model Benchmarks**."
     )
 
 # Filter dataset
@@ -96,7 +98,7 @@ with kpi1:
     kpi1.metric(
         "Total Portfolio Customers",
         f"{total_cust:,}",
-        f"{total_cust / len(df) * 100:.0f}% of total base"
+        f"{total_cust / len(df) * 100:.0f}% of base"
     )
 
 with kpi2:
@@ -139,13 +141,13 @@ with col_l:
         names='Status',
         values='Count',
         color='Status',
-        color_discrete_map={'Retained': '#3B82F6', 'Churned': '#EF4444'},
+        color_discrete_map={'Retained': '#10B981', 'Churned': '#E11D48'},
         hole=0.45
     )
     fig_pie.update_traces(textinfo='percent+label', textfont_size=13)
     fig_pie.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,255,255,0)',
         legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5),
         margin=dict(t=20, b=20)
     )
@@ -163,12 +165,12 @@ with col_r:
         y='Churn Rate %',
         color='Geography',
         text='Churn Rate %',
-        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
+        color_discrete_map={'Germany': '#BE123C', 'France': '#F43F5E', 'Spain': '#FB7185'}
     )
     fig_geo.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig_geo.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         showlegend=False,
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
@@ -191,16 +193,16 @@ with col_l2:
         x='age_segment',
         y='Churn Rate %',
         color='Churn Rate %',
-        color_continuous_scale='Reds',
+        color_continuous_scale='RdPu',
         text='Churn Rate %'
     )
     fig_age.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig_age.update_layout(
         coloraxis_showscale=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
-        xaxis_title="",
+        xaxis_title="Age Segment",
         margin=dict(t=20, b=20)
     )
     st.plotly_chart(fig_age, use_container_width=True)
@@ -216,27 +218,70 @@ with col_r2:
         x='Status',
         y='Churn Rate %',
         color='Status',
-        color_discrete_map={'Inactive Member': '#EF4444', 'Active Member': '#10B981'},
+        color_discrete_map={'Inactive Member': '#E11D48', 'Active Member': '#10B981'},
         text='Churn Rate %'
     )
     fig_act.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig_act.update_layout(
         showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)
     )
     st.plotly_chart(fig_act, use_container_width=True)
 
-# ── Quick Export & Drilldown ───────────────────────────────────────────────────
+# ── Multi-Format Data Downloads ────────────────────────────────────────────────
 st.markdown("---")
-st.subheader("📥 Export Filtered Analytical Records")
-csv_bytes = filtered_df.to_csv(index=False).encode('utf-8')
-st.download_button(
-    label="Download Filtered Data (CSV)",
-    data=csv_bytes,
-    file_name="filtered_banking_churn_records.csv",
-    mime="text/csv"
-)
+st.subheader("📥 Export Analytical Reports & Datasets (Multi-Format)")
+st.markdown("Download the filtered banking cohort in your preferred enterprise format:")
+
+summary_dict = {
+    'total_customers': total_cust,
+    'churn_rate': churn_rate,
+    'hv_churners': hv_churners,
+    'capital_at_risk': capital_at_risk
+}
+
+dl_col1, dl_col2, dl_col3, dl_col4 = st.columns(4)
+
+with dl_col1:
+    csv_data = export_csv(filtered_df)
+    st.download_button(
+        label="📄 Download CSV",
+        data=csv_data,
+        file_name="banking_churn_data.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+
+with dl_col2:
+    json_data = export_json(filtered_df)
+    st.download_button(
+        label="📋 Download JSON",
+        data=json_data,
+        file_name="banking_churn_data.json",
+        mime="application/json",
+        use_container_width=True
+    )
+
+with dl_col3:
+    pdf_data = export_pdf(filtered_df, "European Banking Churn Analysis Report", summary_dict)
+    st.download_button(
+        label="📕 Download PDF Report",
+        data=pdf_data,
+        file_name="banking_churn_executive_report.pdf",
+        mime="application/pdf",
+        use_container_width=True
+    )
+
+with dl_col4:
+    docx_data = export_docx(filtered_df, "European Banking Churn Analysis Report", summary_dict)
+    st.download_button(
+        label="📘 Download Word (DOCX)",
+        data=docx_data,
+        file_name="banking_churn_executive_report.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        use_container_width=True
+    )
