@@ -93,13 +93,13 @@ The application is organized into 7 specialized views:
 
 | View | Page File | Core Capabilities & Business Value |
 | :--- | :--- | :--- |
-| **Executive Portal** | `app/main.py` | Macro portfolio health, total capital at risk, global country/gender/age filters, status distribution donut, and one-click filtered dataset export. |
-| **Segment Churn Summary** | `01_churn_summary.py` | Multi-dimensional cohort analysis across age segments, credit bands, tenure groups, and balance categories. |
-| **Geography & Demographics** | `02_geography_demographics.py` | Regional disparity breakdown (Germany vs France vs Spain), demographic pyramids, and gender divergence. |
-| **High-Value Explorer** | `03_highvalue_explorer.py` | Balance percentile thresholding, balance vs salary risk scatter plots, and exportable priority retention list. |
-| **Engagement & Tenure** | `04_engagement_tenure.py` | Active vs Inactive member gap analysis, product fatigue curves, and targeted high-balance retention queues. |
-| **AI Churn Predictor** | `05_churn_prediction_ml.py` | Real-time customer risk scoring, preset executive personas, Plotly speedometer gauge, automated risk driver diagnostics, and **What-If counterfactual sandbox**. |
-| **Model Benchmarks & ROI** | `06_model_performance.py` | Cross-model benchmark table, interactive ROC & PR curves, feature importance ranking, and **Banking Cost-Benefit ROI Calculator**. |
+| **Executive Portal** | `app/main.py` | Macro portfolio health, total capital at risk, global country/gender/age filters, status distribution donut, and **Multi-Format Export (CSV, JSON, PDF, Word DOCX)**. |
+| **Segment Churn Summary** | `01_📊_Churn_Summary.py` | Multi-dimensional cohort analysis across age segments, credit bands, tenure groups, and balance categories. |
+| **Geography & Demographics** | `02_🌍_Geography_Demographics.py` | Regional disparity breakdown (Germany vs France vs Spain), demographic pyramids, and gender divergence. |
+| **High-Value Explorer** | `03_💎_HighValue_Explorer.py` | Balance percentile thresholding, balance vs salary risk scatter plots, and exportable priority retention list. |
+| **Engagement & Tenure** | `04_🤝_Engagement_Tenure.py` | Active vs Inactive member gap analysis, product fatigue curves, and targeted high-balance retention queues. |
+| **AI Churn Predictor** | `05_🤖_Churn_Prediction_ML.py` | Real-time customer risk scoring, preset executive personas, Plotly speedometer gauge, automated risk driver diagnostics, and **What-If counterfactual sandbox**. |
+| **Model Benchmarks & ROI** | `06_📈_Model_Performance.py` | Cross-model benchmark table, interactive ROC & PR curves, feature importance ranking, and **Banking Cost-Benefit ROI Calculator**. |
 
 ---
 
@@ -124,40 +124,55 @@ Scalable across the full 10,000 customer base, proactive ML-driven retention del
 finance-analytics-UM/
 │
 ├── .streamlit/
-│   └── config.toml                      # Modern dark theme and server configuration
+│   └── config.toml                          # Modern White & Rose-Pink theme configuration
 │
 ├── app/
-│   ├── main.py                          # Executive dashboard entry point
-│   ├── ui_utils.py                      # Reusable glassmorphic CSS, cards & gauge charts
+│   ├── main.py                              # Executive dashboard entry point with multi-format export
+│   ├── ui_utils.py                          # Reusable White & Pink styles, cards & gauge charts
+│   ├── export_utils.py                      # Multi-format report generators (CSV, JSON, PDF, DOCX)
 │   └── pages/
-│       ├── 01_churn_summary.py          # Cohort churn rates across 5 dimensions
-│       ├── 02_geography_demographics.py # Regional and demographic risk explorer
-│       ├── 03_highvalue_explorer.py     # Wealth exposure & premium customer risk
-│       ├── 04_engagement_tenure.py      # Activity status and product fatigue analysis
-│       ├── 05_churn_prediction_ml.py    # Real-time AI prediction & what-if simulator
-│       └── 06_model_performance.py     # Benchmark scoreboard, ROC curves & ROI model
+│       ├── 01_📊_Churn_Summary.py           # Cohort churn rates across 5 dimensions
+│       ├── 02_🌍_Geography_Demographics.py  # Regional and demographic risk explorer
+│       ├── 03_💎_HighValue_Explorer.py      # Wealth exposure & premium customer risk
+│       ├── 04_🤝_Engagement_Tenure.py       # Activity status and product fatigue analysis
+│       ├── 05_🤖_Churn_Prediction_ML.py     # Real-time AI prediction & what-if simulator
+│       └── 06_📈_Model_Performance.py      # Benchmark scoreboard, ROC curves & ROI model
 │
 ├── data/
 │   ├── raw/
-│   │   └── Churn_Modelling.csv          # Original Kaggle/ECB banking records (10,000 rows)
+│   │   └── Churn_Modelling.csv              # Original Kaggle/ECB banking records (10,000 rows)
 │   └── processed/
-│       ├── churn_segmented.csv          # Intermediate segmented dataset
-│       └── churn_final_scored.csv       # Production dataset with engineered financial ratios
+│       ├── churn_segmented.csv              # Intermediate segmented dataset
+│       └── churn_final_scored.csv           # Production dataset with engineered financial ratios
 │
 ├── models/
-│   ├── churn_pipeline.joblib            # Serialized production ColumnTransformer + XGBoost
-│   ├── model_comparison.json            # Cross-validated performance benchmarks
-│   ├── model_metrics.json               # Final test set evaluation metrics & metadata
-│   ├── feature_importance.json          # Normalized global feature importance rankings
-│   └── roc_pr_curves.json               # Coordinate data for interactive ROC/PR curves
+│   ├── xgb_model.json                       # Native XGBoost format (version-independent)
+│   ├── preprocessor_params.json             # Scaling & encoding parameters
+│   ├── churn_pipeline.joblib                # Serialized ColumnTransformer + XGBoost
+│   ├── model_comparison.json                # Cross-validated performance benchmarks
+│   ├── model_metrics.json                   # Final test set evaluation metrics & metadata
+│   ├── feature_importance.json              # Normalized global feature importance rankings
+│   └── roc_pr_curves.json                   # Coordinate data for interactive ROC/PR curves
 │
 ├── notebooks/
-│   ├── 01_EDA.ipynb                     # Exploratory Data Analysis & initial data exploration
-│   ├── 02_churn_analysis.ipynb          # Statistical segmentation, KPI formulation & risks
+│   ├── 01_EDA.ipynb                         # Exploratory Data Analysis & initial data exploration
+│   ├── 02_churn_analysis.ipynb              # Statistical segmentation, KPI formulation & risks
 │   └── 03_ml_churn_prediction_modeling.ipynb # Enterprise ML training, tuning, and evaluation
 │
 ├── src/
-│   ├── __init__.py                      # Package initialization
+│   ├── __init__.py                          # Package initialization
+│   ├── data_loader.py                       # Robust data loading with cloud fallbacks
+│   ├── features.py                          # Financial domain feature engineering module
+│   ├── model_trainer.py                     # Multi-model training, tuning, and export pipeline
+│   └── inference.py                         # Real-time scoring and counterfactual simulator
+│
+├── tests/
+│   └── test_pipeline.py                     # Unit & integration tests for data, features, and ML
+│
+├── .gitignore                               # Git ignore rules for checkpoints, envs, and pyc
+├── requirements.txt                         # Production dependencies
+└── README.md                                # Comprehensive technical documentation
+```
 │   ├── data_loader.py                   # Robust data loading with cloud fallbacks
 │   ├── features.py                      # Financial domain feature engineering module
 │   ├── model_trainer.py                 # Multi-model training, tuning, and export pipeline
