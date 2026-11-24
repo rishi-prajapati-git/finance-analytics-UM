@@ -72,14 +72,14 @@ with col1:
         x='Segment',
         y='Churn Rate %',
         color='Churn Rate %',
-        color_continuous_scale='Reds',
+        color_continuous_scale='RdPu',
         text='Churn Rate %'
     )
     fig.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig.update_layout(
         coloraxis_showscale=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)
@@ -93,12 +93,12 @@ with col2:
         names='Segment',
         values='Churned',
         hole=0.4,
-        color_discrete_sequence=px.colors.qualitative.Safe
+        color_discrete_sequence=px.colors.sequential.RdPu_r
     )
     fig2.update_traces(textinfo='percent+label', textfont_size=12)
     fig2.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,255,255,0)',
         margin=dict(t=20, b=20)
     )
     st.plotly_chart(fig2, use_container_width=True)
@@ -107,6 +107,6 @@ st.markdown("---")
 st.subheader(f"📋 Detailed Breakdown: {selected_segment}")
 display_table = seg_data[['Segment', 'Total', 'Churned', 'Retained', 'Churn Rate %', '% of Total Churn']].copy()
 st.dataframe(
-    display_table.style.highlight_max(subset=['Churn Rate %'], color='#7F1D1D'),
+    display_table.style.highlight_max(subset=['Churn Rate %'], color='#FECDD3'),
     use_container_width=True
 )

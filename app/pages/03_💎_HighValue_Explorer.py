@@ -77,13 +77,13 @@ with col_l:
         x='Balance',
         y='EstimatedSalary',
         color=hv_df['Exited'].map({0: 'Retained', 1: 'Churned'}),
-        color_discrete_map={'Retained': '#3B82F6', 'Churned': '#EF4444'},
-        opacity=0.7,
+        color_discrete_map={'Retained': '#10B981', 'Churned': '#E11D48'},
+        opacity=0.75,
         hover_data=['Geography', 'Age', 'NumOfProducts']
     )
     fig.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         legend_title_text="Status",
         margin=dict(t=20, b=20)
     )
@@ -97,13 +97,13 @@ with col_r:
     fig2 = px.bar(
         geo_hv, x='Geography', y='Churn Rate %',
         color='Geography', text='Churn Rate %',
-        color_discrete_map={'Germany': '#EF4444', 'France': '#3B82F6', 'Spain': '#10B981'}
+        color_discrete_map={'Germany': '#BE123C', 'France': '#F43F5E', 'Spain': '#FB7185'}
     )
     fig2.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
     fig2.update_layout(
         showlegend=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="Churn Rate (%)",
         xaxis_title="",
         margin=dict(t=20, b=20)

@@ -67,7 +67,7 @@ for model_name, stats in comparison.items():
 
 score_df = pd.DataFrame(records).sort_values("ROC-AUC", ascending=False)
 st.dataframe(
-    score_df.style.highlight_max(subset=["ROC-AUC", "CV ROC-AUC (Mean)", "F1-Score", "Recall"], color="#1E3A8A"),
+    score_df.style.highlight_max(subset=["ROC-AUC", "CV ROC-AUC (Mean)", "F1-Score", "Recall"], color="#FECDD3"),
     use_container_width=True
 )
 
@@ -83,7 +83,7 @@ with col_c1:
         "Logistic Regression": "#94A3B8",
         "Random Forest": "#3B82F6",
         "Gradient Boosting": "#10B981",
-        "XGBoost Classifier": "#EF4444"
+        "XGBoost Classifier": "#E11D48"
     }
 
     for name, c_data in curves.items():
@@ -93,21 +93,21 @@ with col_c1:
             y=c_data["tpr"],
             mode="lines",
             name=f"{name} (AUC: {auc_score:.3f})",
-            line=dict(color=palette.get(name, "#38BDF8"), width=2.5)
+            line=dict(color=palette.get(name, "#E11D48"), width=2.5)
         ))
 
     fig_roc.add_trace(go.Scatter(
         x=[0, 1], y=[0, 1],
         mode="lines",
         name="Random Classifier",
-        line=dict(color="#64748B", dash="dash")
+        line=dict(color="#94A3B8", dash="dash")
     ))
 
     fig_roc.update_layout(
         xaxis_title="False Positive Rate",
         yaxis_title="True Positive Rate (Recall)",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         legend=dict(yanchor="bottom", y=0.05, xanchor="right", x=0.98),
         margin=dict(t=20, b=20)
     )
@@ -123,14 +123,14 @@ with col_c2:
             y=c_data["precision_curve"],
             mode="lines",
             name=name,
-            line=dict(color=palette.get(name, "#38BDF8"), width=2.5)
+            line=dict(color=palette.get(name, "#E11D48"), width=2.5)
         ))
 
     fig_pr.update_layout(
         xaxis_title="Recall",
         yaxis_title="Precision",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         legend=dict(yanchor="top", y=0.98, xanchor="right", x=0.98),
         margin=dict(t=20, b=20)
     )
@@ -150,14 +150,14 @@ with col_f1:
         y="feature",
         orientation="h",
         color="importance",
-        color_continuous_scale="Viridis",
+        color_continuous_scale="RdPu",
         text="importance"
     )
     fig_feat.update_traces(texttemplate='%{text:.3f}', textposition='outside')
     fig_feat.update_layout(
         coloraxis_showscale=False,
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(15, 23, 42, 0.4)',
+        paper_bgcolor='rgba(255,255,255,0)',
+        plot_bgcolor='rgba(255,241,242,0.4)',
         yaxis_title="",
         xaxis_title="Normalized Relative Importance",
         margin=dict(t=20, b=20)
